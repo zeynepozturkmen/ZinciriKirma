@@ -1,0 +1,215 @@
+﻿@using ZinciriKirma.App_Classes;
+@model List<Chain>
+@using ZinciriKirma.Model
+
+
+
+
+@*<style>
+        /* $blue: #1686d9; */
+
+        /*MODAL STARTS HERE */
+
+        .bg-modal {
+            background-color: rgba(0, 0, 0,0);
+            /*background-color:purple;*/
+            width: 90%;
+            height: 90%;
+            position: absolute;
+            top: 100px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-contents {
+            height: 500px;
+            width: 800px;
+            background-color: gray;
+            /*text-align: center;*/
+            padding: 20px;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        /*input,label,select {
+                margin: 15px auto;
+                display: block;
+                width: 50%;
+                padding: 8px;
+                border: 1px solid gray;
+            }*/
+
+        .close {
+            position: absolute;
+            top: 0;
+            right: 10px;
+            font-size: 50px;
+            color: red;
+            transform: rotate(45deg);
+            cursor: pointer;
+        }
+    </style>*@
+
+<div class="col-md-12">
+    <div class="block">
+        <div class="block-heading">
+            @*<div class="main-text h2">
+                    Zincirler Listesi
+                </div>*@
+
+            <div class="block-controls">
+
+                <span aria-hidden="true" class="icon icon-arrow-down icon-size-medium block-control-collapse"></span>
+
+                @*<a href="/Product/AddProduct" class="btn btn-success rounded" role="button">Ürün Ekle</a>*@
+
+            </div>
+        </div>
+        <div class="block-content-outer">
+            <div class="block-content-inner">
+                <table class="table table-striped table-hover" id="table">
+                    <thead>
+                        <tr>
+                            <th>Zincir Adı</th>
+                            <th>Başlangıç Tarihi</th>
+                            <th>Bitiş Tarihi</th>
+                            <th>Yapılma Sıklığı</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (Chain chain in Model)
+                        {
+
+                            <tr>
+                                <td>@chain.ChainName </td>
+                                <td>@chain.StartingDate</td>
+                                <td>@chain.EndDate</td>
+                                <td>@chain.Frequency</td>
+
+                                <!--Alttaki satırda birden fazla parametre gönderilebiliyor.İlk parametrenin yanına boşluk bırakmadan "&" işareti ile yanına ekliyebiliyoruz.-->
+
+                                <td><a  class="btn btn-primary rounded view" data-target="/User/ChainDetail/@chain.ChainID" data-toggle="modal" >Yapıldı</a></td>
+                                @*<td><a href="#" class="btn btn-info btn-lg rounded removeFromChain" data-id="@chain.ChainID"><i class="glyphicon glyphicon-trash"></i></a></td>*@
+                                <td>
+                                    <a href="#" class="btn btn-danger removeFromChain" data-id="@chain.ChainID">
+                                        <span class="glyphicon glyphicon-trash"></span>Sil
+                                    </a>
+                                </td>
+                            </tr>
+
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    $(".removeFromChain").click(function () {
+
+        //alert("sor sile girdi");
+
+        var answer = confirm("Kayıt silinsin mi?");    //Confirm = evet- hayır soruları sorduran mesaj kutusu.
+
+        if (answer == true) {
+
+            var id = $(this).attr("data-id");
+
+            //alert("Chain ID: " + id);
+
+            $.ajax({
+
+                type: "POST",
+                url: "/User/deleteChain/" + id,
+
+                success: function () {
+
+
+                    alert("Kayıt silindi");
+                    window.location.replace("/User/Index");  //Burası AJAX koduyla yapılmadı,Ajax ile yapmayı araştır.(Yani tüm sayfayı(Footer,header vs) yüklüyor bunu istemiyoruz)
+                },
+
+                error: function () {
+
+                    alert("Kayıt silme sırasında hata oluştu!");
+                },
+
+            });
+
+        }
+        else {
+
+            alert("İptale basıldı.");
+
+        }
+
+    });
+
+
+</script>
+
+
+
+
+
+@*<script>
+
+        $(".removeFromChain").click(function () {
+
+            alert("funk girdi");
+
+            var id = $(this).attr("data-id");
+             alert("prdID: " + id);
+
+            $.ajax({
+
+                type: "POST",
+                url: "/User/deleteChain/" + id,
+
+                success: function () {
+                    //alert(messageRemoveCart);
+                    alert("girdi");
+
+                    $.ajax({
+
+                        type: "GET",
+                        url: "/User/PartialCartListView",
+                        success: function (response) {
+
+                            $("#chainList").html(response);
+                            alert("girdi2");
+
+                        },
+                        error: function () {
+                            alert("hata");
+                        }
+
+                    });
+
+                },
+
+                error: function () {
+                    alert("Ürün sepetten silinirken  ajax hatası oluştu");
+                },
+
+            });
+        });
+
+    </script>*@
+
+
+

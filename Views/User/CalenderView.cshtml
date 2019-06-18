@@ -1,0 +1,202 @@
+﻿@{
+    Layout = null;
+}
+
+@using ZinciriKirma.App_Classes;
+@model Chain
+@using ZinciriKirma.Model
+
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/fullcalendar.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="calendar">
+
+    </div>
+
+    <script src="~/Scripts/jquery-2.0.0.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/moment-with-locales.min.js"></script>
+    <script src="~/Scripts/fullcalendar/fullcalendar.min.js"></script>
+    <script src="~/Scripts/fullcalendar/locale/tr.js"></script>
+    <script src="~/Scripts/fullcalendar/locale-all.js"></script>
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootbox.min.js"></script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            GetCalendarEvents();
+        });
+
+        var x = true;
+
+
+        function GetCalendarEvents() {
+            debugger;
+            //modelden ChainID degerini alınıyor.
+            var chainID = '@Model.ChainID';
+            //alert(chainID);
+
+            $('#calendar').fullCalendar({
+                lang: 'tr',
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                events: {
+                    url: '/User/GetCalendarEvents/',
+                    data: function () {
+                        return {
+                            ChainID: chainID
+                        };
+                    }
+                },
+                //eventClick: function (event) {
+                //    alert('Item ID: ' + event.id + "\nItem Title: " + event.title);
+                //},
+                dayClick: function (date, jsEvent, view) {
+                    NewItem(date.format());
+                },
+                eventClick: function (event) {
+                    UpdateChainRingArchieved(event.id);
+                },
+                //eventDrop: function (event, delta, revertFunc) {
+                //    UpdateItemDate(event);
+                //},
+
+            });
+        }
+
+
+
+        //chaindetail durumunu yapıldı, yapılmadı olarak güncelliyoruz
+        function UpdateChainRingArchieved(ChainDetailID) {
+            $.ajax({
+                type: "POST",
+                url: "/User/UpdateChainRingArchieved",
+                data: "{'ChainDetailID':" + ChainDetailID + "}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: true,
+                error: function (request, status, error) {
+                },
+                success: function (msg) {
+                    $('#calendar').fullCalendar('refetchEvents');
+                    $('#calendar').fullCalendar('unselect');
+                }
+            });
+        }
+
+        // Seçilen tarih için yeni event oluşturma, modal açar
+        function NewItem(selectedDate) {
+
+            var html = '';
+
+            html += '<div class="row form-horizontal">';
+            html += '<div class="col-md-12">';
+            html += '<div class="form-group">';
+            html += '<div class="col-lg-12 control-label">Yapıldı mı?</div></br>';
+            html += '<div class="col-lg-12">';
+            html += '<label class=""><input type="radio"  name="chaingRingArchived" checked value="true" ></label>';
+            html += '<label class="">Yapıldı</label></br>';
+            html += '<label class=""><input type="radio"  name="chaingRingArchived" value="false" ></label>';
+            html += '<label class="">Yapılmadı</label>';
+
+
+
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+
+            html += '<div class="row form-horizontal">';
+            html += '<div class="col-md-12">';
+            html += '<div class="form-group">';
+            html += '<div class="col-lg-12 control-label">Yapıldığı Tarihi</div>';
+            html += '<div class="col-lg-12">';
+            html += '<input type="text" class="form-control" id="txtStartDate" disabled value="' + selectedDate + '" />';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+
+
+
+            bootbox.dialog({
+                message: html,
+                title: "Yapıldı Mı?",
+                size: "medium",
+                buttons: {
+                    success: {
+                        label: "Kaydet", className: "btn-success",
+                        callback: function () {
+                            var item = {
+                                //id: 0,
+                                //var radioValue = $("input[name='chaingRingArchived']:checked").val();
+                                //if(radioValue) {
+                                //    alert("Your are a - " + radioValue);
+                                //}
+
+                                ChainRingArchived: $("input[name='chaingRingArchived']:checked").val(),
+                                ChainRingDate: $('#txtStartDate').val(),
+                                ChainID: '@Model.ChainID'
+                            }
+                         
+                         
+                            SaveItem(item);
+                        }
+                    },
+                    danger: {
+                        label: "İptal",
+                        className: "btn-default"
+                    }
+                }
+            });
+        }
+
+
+        // modal'da girilen verileri kaydeder
+        function SaveItem(item) {
+            $.ajax({
+                type: "POST",
+                url: "/User/AddOrEditItem/",
+                data: "{\"item\":" + JSON.stringify(item) + "}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: true,
+                error: function (request, status, error) {
+                    var obj = jQuery.parseJSON(request.responseText);
+                    bootbox.alert(obj.Message);
+                },
+                success: function (msg) {
+                    $('#calendar').fullCalendar('refetchEvents');
+                    $('#calendar').fullCalendar('unselect');
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+

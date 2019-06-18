@@ -1,0 +1,82 @@
+﻿
+@using ZinciriKirma.App_Classes;
+@model Chain
+@using ZinciriKirma.Model
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+    <link href="~/Content/fullcalendar.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="calendar">
+
+    </div>
+    <script src="~/Scripts/jquery-2.0.0.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/moment-with-locales.min.js"></script>
+    <script src="~/Scripts/fullcalendar/fullcalendar.min.js"></script>
+    <script src="~/Scripts/fullcalendar/locale/tr.js"></script>
+    <script src="~/Scripts/fullcalendar/locale-all.js"></script>
+    <script>
+        $(document).ready(function () {
+            GetCalendarEvents();
+        });
+
+        function GetCalendarEvents() {
+            // modeldan chainid değerini alıyoruz
+            var chainID = '@Model.ChainID';
+            $('#calendar').fullCalendar({
+                lang: 'tr',
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                // chaindetail bilgilerini çekmek için metodumuza chainid değerimizi post ediyoruz
+                events: {
+                    url: '/User/GetCalendarEvents',
+                    data: function () {
+                        return {
+                            ChainID: chainID
+                        };
+                    }
+                },
+                eventClick: function (event) {
+                    UpdateChainRingArchieved(event.id);
+                    //alert('Item ID: ' + event.id + "\nItem Title: " + event.title);
+                }
+            });
+        }
+
+        //chaindetail durumunu yapıldı, yapılmadı olarak güncelliyoruz
+        function UpdateChainRingArchieved(ChainDetailID) {
+            $.ajax({
+                type: "POST",
+                url: "/User/UpdateChainRingArchieved",
+                data: "{'ChainDetailID':" + ChainDetailID + "}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: true,
+                error: function (request, status, error) {
+                },
+                success: function (msg) {
+                    $('#calendar').fullCalendar('refetchEvents');
+                    $('#calendar').fullCalendar('unselect');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

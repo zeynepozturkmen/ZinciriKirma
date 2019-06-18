@@ -1,0 +1,350 @@
+﻿@model ZinciriKirma.Model.Chain
+
+
+<style>
+    body {
+        background: #e0e0e0;
+    }
+
+    #cal {
+        -moz-box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+        -webkit-box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+        margin: 50px auto;
+        font: 13px/1.5 "Helvetica Neue", Helvatica, Arial, san-serif;
+        display: table;
+    }
+
+        #cal .header {
+            cursor: default;
+            background: #cd310d;
+            background: -moz-linear-gradient(top, #b32b0c, #cd310d);
+            background: -webkit-gradient(linear, left top, left bottom, from(#b32b0c), to(#cd310d));
+            height: 34px;
+            position: relative;
+            color: #fff;
+            -webkit-border-top-left-radius: 5px;
+            -webkit-border-top-right-radius: 5px;
+            -moz-border-radius-topleft: 5px;
+            -moz-border-radius-topright: 5px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            font-weight: bold;
+            text-shadow: 0px -1px 0 #87260C;
+            text-transform: uppercase;
+        }
+
+            #cal .header span {
+                display: inline-block;
+                line-height: 34px;
+            }
+
+            #cal .header .hook {
+                width: 9px;
+                height: 28px;
+                position: absolute;
+                bottom: 60%;
+                border-radius: 10px;
+                -moz-border-radius: 10px;
+                -webkit-border-radius: 10px;
+                background: #ececec;
+                background: -moz-linear-gradient(right top, #fff, #827e7d);
+                background: -webkit-gradient(linear, right top, right bottom, from(#fff), to(#827e7d));
+                box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.65 );
+                -moz-box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.65 );
+                -webkit-box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.65 );
+            }
+
+    .right.hook {
+        right: 15%;
+    }
+
+    .left.hook {
+        left: 15%;
+    }
+
+    #cal .header .button {
+        width: 24px;
+        text-align: center;
+        position: absolute;
+    }
+
+    #cal .header .left.button {
+        left: 0;
+        -webkit-border-top-left-radius: 5px;
+        -moz-border-radius-topleft: 5px;
+        border-top-left-radius: 5px;
+        border-right: 1px solid #ae2a0c;
+    }
+
+    #cal .header .right.button {
+        right: 0;
+        top: 0;
+        border-left: 1px solid #ae2a0c;
+        -webkit-border-top-right-radius: 5px;
+        -moz-border-radius-topright: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    #cal .header .button:hover {
+        background: -moz-linear-gradient(top, #d94215, #bb330f);
+        background: -webkit-gradient(linear, left top, left bottom, from(#d94215), to(#bb330f));
+    }
+
+    #cal .header .month-year {
+        letter-spacing: 1px;
+        width: 100%;
+        text-align: center;
+    }
+
+    #cal table {
+        background: #fff;
+        border-collapse: collapse;
+    }
+
+    #cal td {
+        color: #2b2b2b;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border: 1px solid #e6e6e6;
+        cursor: default;
+    }
+
+    #cal #days td {
+        height: 26px;
+        line-height: 26px;
+        text-transform: uppercase;
+        font-size: 90%;
+        color: #9e9e9e;
+    }
+
+        #cal #days td:not(:last-child) {
+            border-right: 1px solid #fff;
+        }
+
+    #cal #cal-frame td.today {
+        background: #ededed;
+        color: #8c8c8c;
+        box-shadow: 1px 1px 0px #fff inset;
+        -moz-box-shadow: 1px 1px 0px #fff inset;
+        -webkit-box-shadow: 1px 1px 0px #fff inset;
+    }
+
+    #cal #cal-frame td:not(.nil):hover {
+        color: #fff;
+        text-shadow: #6C1A07 0px -1px;
+        background: #CD310D;
+        background: -moz-linear-gradient(top, #b32b0c, #cd310d);
+        background: -webkit-gradient(linear, left top, left bottom, from(#b32b0c), to(#cd310d));
+        -moz-box-shadow: 0px 0px 0px;
+        -webkit-box-shadow: 0px 0px 0px;
+    }
+
+    #cal #cal-frame td span {
+        font-size: 80%;
+        position: relative;
+    }
+
+        #cal #cal-frame td span:first-child {
+            bottom: 5px;
+        }
+
+        #cal #cal-frame td span:last-child {
+            top: 5px;
+        }
+
+    #cal #cal-frame table.curr {
+        float: left;
+    }
+
+    #cal #cal-frame table.temp {
+        position: absolute;
+    }
+</style>
+
+
+
+
+
+
+
+<div class="form-horizontal">
+    <div>
+        <h5 class="text-success text-uppercase">@Model.ChainName</h5>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label" style="font-weight:bold" for="email">Başlangıç Tarihi:</label>
+        <input type="text" style="border:0; background-color:white" disabled value="@Model.StartingDate">
+
+    </div>
+
+    <div class="form-group">
+        <label class="control-label " style="font-weight:bold" for="email">Bitiş Tarihi:</label>
+        <input type="text" style="border:0; background-color:white" disabled value="@Model.EndDate">
+
+    </div>
+
+    <div class="form-group">
+        <label class="control-label " style="font-weight:bold" for="email">Yapılma Sıklığı:  </label>
+        <input type="text" style="border:0; background-color:white" disabled value="@Model.Frequency">
+    </div>
+
+
+    <div id="cal">
+        <div class="header">
+            <span class="left button" id="prev"> &lang; </span>
+            <span class="left hook"></span>
+            <span class="month-year" id="label"> May 20&0 </span>
+            <span class="right hook"></span>
+            <span class="right button" id="next"> &rang; </span>
+        </div>
+        <table id="days">
+            <tr>
+                <td>sun</td>
+                <td>mon</td>
+                <td>tue</td>
+                <td>wed</td>
+                <td>thu</td>
+                <td>fri</td>
+                <td>sat</td>
+            </tr>
+        </table>
+        <div id="cal-frame">
+            <table class="curr">
+                <tbody>
+                    <tr><td class="nil"></td><td class="nil"></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+                    <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td class="today">11</td><td>12</td></tr>
+                    <tr><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr>
+                    <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+                    <tr><td>27</td><td>28</td><td>29</td><td>30</td><td class="nil"></td><td class="nil"></td><td class="nil"></td></tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+<script>
+        var cal = CALENDAR();
+
+        cal.init();
+    </script>
+
+<script>
+
+ 
+
+    var CALENDAR = function () {
+        var wrap, label,
+            months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        function init(newWrap) {
+            wrap = $(newWrap || "#cal");
+            label = wrap.find("#label");
+
+            wrap.find("#prev").bind("click.calender", function () { switchMonth(false); });
+            wrap.find("#next").bind("click.calender", function () { switchMonth(true); });
+            label.bind("click.calendar", function () { switchMonth(null, new Date().getMonth(), new Date().getFullYear()); });
+        }
+
+        function switchMonth(next, month, year) {
+            var curr = label.text().trim().split(" "), calendar, tempYear = parseInt(curr[1], 10);
+
+            month = month || ((next) ? ((curr[0] === "December") ? 0 : months.indexOf(curr[0]) + 1) : ((curr[0] === "January") ? 11 : months.indexOf(curr[0]) - 1));
+            year = year || ((next && month === 0) ? tempYear + 1 : (!next && month === 11) ? tempYear - 1 : tempYear);
+
+            console.profile("createCal");
+            calendar = createCal(year, month);
+            console.profileEnd("createCal");
+
+            $("#cal-frame", wrap)
+                .find(".curr")
+                .removeClass("curr")
+                .addClass("temp")
+                .end()
+                .prepend(calendar.calendar())
+                .find(".temp")
+                .fadeOut("slow", function () { $(this).remove(); });
+            label.text(calendar.label);
+        }
+
+        function createCal(year, month) {
+            var day = 1, i, j, haveDays = true,
+                startDay = new Date(year, month, day).getDay(),
+                daysInMonth = [31, (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+                calendar = [];
+            if (createCal.cache[year]) {
+                if (createCal.cache[year][month]) {
+                    return createCal.cache[year][month];
+                }
+            } else {
+                createCal.cache[year] = {};
+            }
+            i = 0;
+            while (haveDays) {
+                calendar[i] = [];
+                for (j = 0; j < 7; j++) {
+                    if (i === 0) {
+                        if (j === startDay) {
+                            calendar[i][j] = day++;
+                            startDay++;
+                        }
+                    } else if (day <= daysInMonth[month]) {
+                        calendar[i][j] = day++;
+                    } else {
+                        calendar[i][j] = "";
+                        haveDays = false;
+                    }
+                    if (day > daysInMonth[month]) {
+                        haveDays = false;
+                    }
+                }
+                i++;
+            }
+
+            if (calendar[5]) {
+                for (i = 0; i < calendar[5].length; i++) {
+                    if (calendar[5][i] !== "") {
+                        calendar[4][i] = "<span>" + calendar[4][i] + "</span><span>" + calendar[5][i] + "</span>";
+                    }
+                }
+                calendar = calendar.slice(0, 5);
+            }
+
+            for (i = 0; i < calendar.length; i++) {
+                calendar[i] = "<tr><td>" + calendar[i].join("</td><td>") + "</td></tr>";
+            }
+
+            calendar = $("<table>" + calendar.join("") + "</table").addClass("curr");
+
+            $("td:empty", calendar).addClass("nil");
+            if (month === new Date().getMonth()) {
+                $('td', calendar).filter(function () { return $(this).text() === new Date().getDate().toString(); }).addClass("today");
+            }
+
+            createCal.cache[year][month] = { calendar: function () { return calendar.clone(); }, label: months[month] + " " + year };
+
+            return createCal.cache[year][month];
+        }
+        createCal.cache = {};
+
+        return {
+            init: init,
+            switchMonth: switchMonth,
+            createCal: createCal
+        };
+
+    };
+
+ 
+
+</script>
+
+

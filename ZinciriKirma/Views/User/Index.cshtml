@@ -1,0 +1,506 @@
+﻿
+@{
+    ViewBag.Title = "User Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using ZinciriKirma.App_Classes;
+@model List<Chain>
+@using ZinciriKirma.Model
+
+
+<style>
+    body {
+        background: #e0e0e0;
+    }
+
+    #cal {
+        margin: 50px auto;
+        font: 13px/1.5 "Helvetica Neue", Helvetica, Arial, san-serif;
+        display: table;
+        box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+        -moz-box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+        -webkit-box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+    }
+
+        #cal .header {
+            cursor: default;
+            background: #cd310d;
+            background: -moz-linear-gradient(top, #b32b0c, #cd310d);
+            background: -webkit-gradient(linear, left top, left bottom, from(#b32b0c), to(#cd310d));
+            height: 34px;
+            position: relative;
+            color: #fff;
+            -webkit-border-top-left-radius: 5px;
+            -webkit-border-top-right-radius: 5px;
+            -moz-border-radius-topleft: 5px;
+            -moz-border-radius-topright: 5px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            font-weight: bold;
+            text-shadow: 0px -1px 0 #87260c;
+            text-transform: uppercase;
+        }
+
+            #cal .header span {
+                display: inline-block;
+                line-height: 34px;
+            }
+
+            #cal .header .hook {
+                width: 9px;
+                height: 28px;
+                position: absolute;
+                bottom: 60%;
+                border-radius: 10px;
+                -moz-border-radius: 10px;
+                -webkit-border-radius: 10px;
+                background: #ececec;
+                background: -moz-linear-gradient(right top, #fff, #827e7d);
+                background: -webkit-gradient(linear, right top, right bottom, from(#fff), to(#827e7d));
+                box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.65);
+                -moz-box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.65);
+                -webkit-box-shadow: 0px -1px 2px rgba(0, 0, 0, 0.65);
+            }
+
+    .right.hook {
+        right: 15%;
+    }
+
+    .left.hook {
+        left: 15%;
+    }
+
+    #cal .header .button {
+        width: 24px;
+        text-align: center;
+        position: absolute;
+    }
+
+        #cal .header .button:hover {
+            background: -moz-linear-gradient(top, #d94215, #bb330f);
+            background: -webkit-gradient(linear, left top, left bottom, from(#d94215), to(#bb330f));
+        }
+
+    #cal .header .right.button {
+        right: 0;
+        top: 0;
+        border-left: 1px solid #ae2a0c;
+        border-top-right-radius: 5px;
+        -moz-border-radius-topright: 5px;
+        -webkit-border-top-right-radius: 5px;
+    }
+
+    #cal .header .left.button {
+        left: 0;
+        border-right: 1px solid #ae2a0c;
+        border-top-left-radius: 5px;
+        -moz-border-radius-topleft: 5px;
+        -webkit-border-top-left-radius: 5px;
+    }
+
+
+    #cal .header .month-year {
+        letter-spacing: 1px;
+        width: 100%;
+        text-align: center;
+    }
+
+    #cal table {
+        background: #fff;
+        border-collapse: collapse;
+    }
+
+    #cal td {
+        color: #2d2d2d;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border: 1px solid #e6e6e6;
+        cursor: default;
+    }
+
+    #cal #day td {
+        height: 26px;
+        line-height: 26px;
+        text-transform: uppercase;
+        font-size: 90%;
+        color: #9e9e9e;
+    }
+
+    #cal #days td:not(:last-child) {
+        border-right: 1px solid #fff;
+    }
+
+    #cal #cal-frame td.today {
+        background: #ededed;
+        color: #8c8c8c8;
+        box-shadow: 1px 1px 0px #fff inset;
+        -moz-box-shadow: 1px 1px 0px #fff inset;
+        -webkit-box-shadow: 1px 1px 0px #fff inset;
+    }
+
+    #cal #cal-frame td:not(.nil):hover {
+        color: #fff;
+        text-shadow: #6c1a07 0px -1px;
+        background: #cd310d;
+        background: -moz-linear-gradient(top, #b32b0c, #cd310d);
+        background: -webkit-gradient(linear, left top, left bottom, from(#b32b0c), to(#cd310d));
+        box-shadow: 0px 0px 0px;
+        -moz-box-shadow: 0px 0px 0px;
+        -webkit-box-shadow: 0px 0px 0px;
+    }
+
+    #cal #cal-frame td span {
+        font-size: 80%;
+        position: relative;
+    }
+
+        #cal #cal-frame td span:first-child {
+            bottom: 5px;
+        }
+
+        #cal #cal-frame td span:last-child {
+            top: 5px;
+        }
+
+    #cal #cal-frame table.temp {
+        position: absolute;
+    }
+
+    #cal #cal-frame table.curr {
+        float: right;
+    }
+</style>
+
+@section head{
+
+
+    <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">Zinciri Kırma</a>
+            <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Menu
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item mx-0 mx-lg-1">
+                        <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Zincirler</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1">
+                        <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">Hakkımızda</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1">
+                        <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Zincir Oluştur</a>
+                    </li>
+
+                    <li class="nav-item mx-0 mx-lg-1">
+                        <div class="pull-right">
+                            <ul class="nav pull-right">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle nav-link py-3 px-0 px-lg-3  " data-toggle="dropdown">Welcome,@User.Identity.Name <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/user/preferences"><i class="icon-cog"></i> Şifre Değiştir</a></li>
+                                        <li><a href="/User/MemberLogout"><i class="icon-off fa fa-sign-out fa-1x"></i> Logout</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+}
+
+
+
+<!--Oluşturulan Zincir Listesi-->
+<section class="portfolio" id="portfolio">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-secondary mb-0">Zincirler</h2>
+        <hr class="star-dark mb-5">
+        <div class="row dinamicDiv" id="chainList">
+
+
+            <div class="col-md-12">
+                <div class="block">
+                    <div class="block-heading">
+                        @*<div class="main-text h2">
+                                Zincirler Listesi
+                            </div>*@
+
+                        <div class="block-controls">
+
+                            <span aria-hidden="true" class="icon icon-arrow-down icon-size-medium block-control-collapse"></span>
+
+                            @*<a href="/Product/AddProduct" class="btn btn-success rounded" role="button">Ürün Ekle</a>*@
+
+                        </div>
+                    </div>
+                    <div class="block-content-outer">
+                        <div class="block-content-inner">
+                            <table class="table table-striped table-hover" id="table">
+                                <thead>
+                                    <tr>
+                                        <th>Zincir Adı</th>
+                                        <th>Başlangıç Tarihi</th>
+                                        <th>Bitiş Tarihi</th>
+                                        <th>Yapılma Sıklığı</th>
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (Chain chain in Model)
+                                    {
+
+                                    <tr>
+                                        <td>@chain.ChainName </td>
+                                        <td>@chain.StartingDate</td>
+                                        <td>@chain.EndDate</td>
+                                        <td>@chain.Frequency</td>
+
+                                        <!--Alttaki satırda birden fazla parametre gönderilebiliyor.İlk parametrenin yanına boşluk bırakmadan "&" işareti ile yanına ekliyebiliyoruz.-->
+
+                                        <td><a class="btn btn-primary rounded view" data-target="/User/ChainDetail/@chain.ChainID" data-toggle="modal"><i class="fa fa-check"> Yapıldı</i></a></td>
+                                        @*<td><a href="#" class="btn btn-info btn-lg rounded removeFromChain" data-id="@chain.ChainID"><i class="glyphicon glyphicon-trash"></i></a></td>*@
+                                        <td>
+                                            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger active" href="#about">Calender View</a>
+                                        </td>
+                                        <td>
+                                            <a class="" href="/User/CalenderView/@chain.ChainID">Calender View Index</a>
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger removeFromChain" data-id="@chain.ChainID">
+                                                <i class="fa fa-trash"> Sil</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    }
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<section class="bg-primary text-white mb-0" id="about">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white">About</h2>
+        <hr class="star-light mb-5">
+        <div id="cal">
+            <div class="header">
+                <span class="left button" id="prev"> &lang; </span>
+                <span class="left hook"></span>
+                <span class="month-year" id="label"> June 2010 </span>
+                <span class="right hook" id=""></span>
+                <span class="right button" id="next"> &rang; </span>
+            </div>
+            <table id="days">
+                <tr>
+                    <td>sun</td>
+                    <td>mon</td>
+                    <td>tue</td>
+                    <td>wed</td>
+                    <td>thu</td>
+                    <td>fri</td>
+                    <td>sat</td>
+                </tr>
+            </table>
+            <div id="cal-frame">
+                <table class="curr">
+                    <tr><td class="nil"></td><td class="nil"></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+                    <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td class="today">11</td><td>12</td></tr>
+                    <tr><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr>
+                    <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+                    <tr><td>27</td><td>28</td><td>29</td><td>30</td><td class="nil"></td><td class="nil"></td><td class="nil"></td></tr>
+                </table>
+            </div>
+        </div>
+        @*<div class="text-center mt-4">
+            <a class="btn btn-xl btn-outline-light" href="#">
+                <i class="fas fa-download mr-2"></i>
+                Download Now!
+            </a>
+        </div>*@
+    </div>
+</section>
+
+
+
+<!--Popup şeklinde açılan Chain Detail ekleme alanı-->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                @*<h5 class="modal-title" id="exampleModalLabel">(Buraya Hedef ismini yazdırmaya çalış)</h5>*@
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post">
+                <div class="modal-body">
+
+
+
+
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!--Yeni Zincir Oluştur-->
+@section body{
+
+    <section id="contact">
+        <div class="container" style="border:5px solid #2C3E50; width:50%; height:25%">
+            <br />
+            <h2 class="text-center text-uppercase text-secondary mb-0" style="font-size:30px">Zincir Oluştur</h2>
+            <hr class="star-dark mb-5">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19. -->
+                    <!-- The form should work on most web servers, but if the form is not working you may need to configure your web server differently. -->
+
+                    <form role="form" method="post" action="/User/AddChain ">
+                        <div class="control-group">
+                            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                <label>Etkinlik Adı</label> <!--Burası textBox'a tıklandığı an yeşil ile bilgilendirme mesajı yazıyor.-->
+                                <input class="form-control" id="name" type="text" placeholder="Hedef ismini Giriniz.." required="required" name="ChainName" data-validation-required-message="Etkinlik Adını Giriniz..">
+
+                                @*<p class="help-block text-danger"></p>*@
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="control-group">
+                            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                <label>Başlangıç Tarihi</label> <!--Burası textBox'a tıklandığı an yeşil ile bilgilendirme mesajı yazıyor.-->
+                                <input class="form-control" id="startDate" type="date" placeholder="Başlangıç Tarihini Seçiniz.." required="required" name="StartingDate" data-validation-required-message="Başlangıç Tarihini Seçiniz..">
+                                @*<p class="help-block text-danger"></p>*@
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="control-group">
+                            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                <label>Bitiş Tarihi</label> <!--Burası textBox'a tıklandığı an yeşil ile bilgilendirme mesajı yazıyor.-->
+                                <input class="form-control" id="endDate" type="date" placeholder="Bitiş Tarihini Seçiniz.." required="required" name="EndDate" data-validation-required-message="Bitiş Tarihini Seçiniz..">
+                                @*<p class="help-block text-danger"></p>*@
+                            </div>
+                        </div>
+
+
+                        <div class="control-group">
+                            <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                                <!--  <label>Tekrar Sıklığı</label> <!--Burası textBox'a tıklandığı an yeşil ile bilgilendirme mesajı yazıyor.-->
+                                <select class="form-control" name="Frequency" id="Frequency">
+
+                                    <option value="günlük">Günlük</option>
+                                    <option value="haftalık">Haftalık</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-xl" id="sendMessageButton">Send</button>
+                        </div>
+                        <br>
+                        @*<div id="success"></div>*@
+
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+}
+
+<script src="~/Content/startbootstrap-freelancer-gh-pages/startbootstrap-freelancer-gh-pages/js/jquery-3.4.1.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+    @*$(function(){
+        $('.add-row').on("click", function(){
+            $.post('@Url.Action("ChainListPartialListView", "User")').always(function(){
+                $('.dinamicDiv').load('/User/ChainListPartialListView');
+            })
+        });
+    });*@
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $("body").on("click", ".view", function () {
+
+            //alert("girdi");
+            var url = $(this).data("target");
+
+            $.post(url, function (data) { })
+
+                .done(function (data) {
+                    //alert("girdi-done");
+
+                    $("#exampleModal .modal-body").html(data);
+
+                    //alert("show modal");
+                    $("#exampleModal").modal("show");
+                })
+
+                .fail(function () {
+
+                    //alert("fail");
+                    $("#exampleModal .modal-body").text("Error!!");
+                    //alert("no show modal");
+                    $("#exampleModal").modal("show");
+                })
+
+        });
+    })
+
+</script>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="~/js/calender.js"></script>
+
+<script>
+    var cal = CALENDAR();
+
+    cal.init();
+</script>

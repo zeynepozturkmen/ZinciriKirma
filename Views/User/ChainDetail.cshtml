@@ -1,0 +1,46 @@
+﻿@model ZinciriKirma.Model.Chain
+
+<div class="form-horizontal">
+    <div>
+        <h5 class="text-success text-uppercase" name="ChainName">@Model.ChainName</h5>
+    </div>
+    <div class="form-group">
+     
+        <input type="hidden" style="border:0; background-color:white" name="ChainID" value="@Model.ChainID">
+
+    </div>
+
+    <div class="form-group">
+        <label class="control-label" style="font-weight:bold" for="email">Hedef Adı:</label>
+        <input type="text" style="border:0; background-color:white" name="ChainName" value="@Model.ChainName">
+
+    </div>
+
+    <div class="form-group">
+        <label class="control-label" style="font-weight:bold" for="email">Başlangıç Tarihi:</label>
+        <input type="text" style="border:0; background-color:white" name="StartingDate" value="@Model.StartingDate">
+
+    </div>
+
+    <div class="form-group">
+        <label class="control-label " style="font-weight:bold" for="email">Bitiş Tarihi:</label>
+        <input type="text" style="border:0; background-color:white" name="EndDate" value="@Model.EndDate">
+
+    </div>
+
+    <div class="form-group">
+        <label class="control-label " style="font-weight:bold" for="email">Yapılma Sıklığı:  </label>
+        @*<input type="text" style="border:0; background-color:white" name="Frequency" value="@Model.Frequency">*@
+        <select class="form-control" name="Frequency" id="Frequency" value="@Model.Frequency">
+
+            <option value="günlük">Günlük</option>
+            <option value="haftalık">Haftalık</option>
+        </select>
+    </div>
+
+
+
+</div>
+
+
+
